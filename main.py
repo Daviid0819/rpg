@@ -19,6 +19,11 @@ def main():
     clock = pygame.time.Clock()
 
     menufont = pygame.font.Font("freesansbold.ttf",30)
+    menucolor = {
+        "ng": "white",
+        "lg": "white",
+        "eg": "white"
+    }
 
     win=0
     name=""
@@ -33,41 +38,48 @@ def main():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_BACKSPACE:
                         name = name[:-1]
-                    else:
+                    elif len(name)<10:
                         name += event.unicode
 
         screen.fill("black")
 
         if win==0:
-            text_ng = menufont.render("New Game",1,"white")
-            screen.blit(text_ng,(width/2-text_ng.get_rect().width/2,100))
-
+            text_ng = menufont.render("New Game",1,menucolor["ng"])
             text_ng_rect = text_ng.get_rect()
             text_ng_rect.x = width/2-text_ng.get_rect().width/2
             text_ng_rect.y = 100
+            screen.blit(text_ng,(text_ng_rect.x,text_ng_rect.y))
 
-            text_lg = menufont.render("Load Game",1,"white")
-            screen.blit(text_lg,(width/2-text_lg.get_rect().width/2,250))
-
+            text_lg = menufont.render("Load Game",1,menucolor["lg"])
             text_lg_rect = text_lg.get_rect()
             text_lg_rect.x = width/2-text_lg.get_rect().width/2
             text_lg_rect.y = 250
+            screen.blit(text_lg,(text_lg_rect.x,text_lg_rect.y))
 
-            text_eg = menufont.render("Exit Game",1,"white")
-            screen.blit(text_eg,(width/2-text_eg.get_rect().width/2,400))
-
+            text_eg = menufont.render("Exit Game",1,menucolor["eg"])
             text_eg_rect = text_eg.get_rect()
             text_eg_rect.x = width/2-text_eg.get_rect().width/2
             text_eg_rect.y = 400
+            screen.blit(text_eg,(text_eg_rect.x,text_eg_rect.y))
 
-            if pygame.mouse.get_pressed()[0] and text_ng_rect.collidepoint(pygame.mouse.get_pos()):
-                win=1
-            elif pygame.mouse.get_pressed()[0] and text_lg_rect.collidepoint(pygame.mouse.get_pos()):
-                pygame.quit()
-                exit()
-            elif pygame.mouse.get_pressed()[0] and text_eg_rect.collidepoint(pygame.mouse.get_pos()):
-                pygame.quit()
-                exit()
+            if text_ng_rect.collidepoint(pygame.mouse.get_pos()):
+                menucolor["ng"]="green"
+                if pygame.mouse.get_pressed()[0]:
+                    win=1
+            elif text_lg_rect.collidepoint(pygame.mouse.get_pos()):
+                menucolor["lg"]="blue"
+                if pygame.mouse.get_pressed()[0]:
+                    pygame.quit()
+                    exit()
+            elif text_eg_rect.collidepoint(pygame.mouse.get_pos()):
+                menucolor["eg"]="red"
+                if pygame.mouse.get_pressed()[0]:
+                    pygame.quit()
+                    exit()
+            else:
+                menucolor["ng"]="white"
+                menucolor["lg"]="white"
+                menucolor["eg"]="white"
         elif win==1:
             text_ng = menufont.render("Enter name:",1,"white")
             screen.blit(text_ng,(width/2-text_ng.get_rect().width/2,100))
