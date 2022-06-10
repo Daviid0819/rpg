@@ -7,3 +7,7 @@ python simple rpg game
     -creating main menu
         - buttons -> actions
         - input box
+3. note
+    - player classes, skills
+        - switch class
+        - classes have different skills
