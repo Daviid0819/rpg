@@ -220,7 +220,7 @@ def main():
                 menucolor["ng"]="white"
                 menucolor["lg"]="white"
                 menucolor["eg"]="white"
-        elif win==3:
+        elif win==3: # Game menu
             text_ch = classfont.render("Character",1,"white")
             text_ch_rect = text_ch.get_rect()
             text_ch_rect.x = 40

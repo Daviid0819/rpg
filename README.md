@@ -11,3 +11,7 @@ python simple rpg game
     - player classes, skills
         - switch class
         - classes have different skills
+4. note
+    -game menu
+    -items
+        -item properties
