@@ -10,6 +10,10 @@ class Player:
         self.lv=1
         self.xp=0
 
+        self.slots=[]
+        self.weapon=None
+        self.clothe=None
+
         self.cl=0
         self.str=0
         self.ig=0
@@ -30,6 +34,15 @@ class Player:
             self.ig=6
             self.ag=10
 
+class Item:
+    def __init__(self,name,atk,de,str,ig,ag):
+        self.name=name
+        self.atk=atk
+        self.de=de
+        self.str=str
+        self.ig=ig
+        self.ag=ag
+
 def main():
     pygame.init()
     width=800
@@ -38,7 +51,19 @@ def main():
     pygame.display.set_caption("RPG")
     clock = pygame.time.Clock()
 
-    p=None
+    p=Player("dave")
+
+    items = [
+        Item("Sword",15,0,5,1,3),
+        Item("Wand",7,0,2,8,4),
+        Item("Knife",10,0,4,0,7),
+
+        Item("Chainvest",0,10,3,0,-4)
+    ]
+
+    p.slots.append(items[0])
+    p.slots.append(items[1])
+    p.slots.append(items[2])
 
     menufont = pygame.font.Font("freesansbold.ttf",30)
     menucolor = {
@@ -49,7 +74,7 @@ def main():
 
     classfont = pygame.font.Font("freesansbold.ttf",20)
 
-    win=2
+    win=3
     name=""
 
     while True:
@@ -195,6 +220,42 @@ def main():
                 menucolor["ng"]="white"
                 menucolor["lg"]="white"
                 menucolor["eg"]="white"
+        elif win==3:
+            text_ch = classfont.render("Character",1,"white")
+            text_ch_rect = text_ch.get_rect()
+            text_ch_rect.x = 40
+            text_ch_rect.y = 50
+            screen.blit(text_ch,(text_ch_rect.x,text_ch_rect.y))
+
+            text_ms = classfont.render("Missions",1,"white")
+            text_ms_rect = text_ms.get_rect()
+            text_ms_rect.x = 40
+            text_ms_rect.y = 100
+            screen.blit(text_ms,(text_ms_rect.x,text_ms_rect.y))
+
+            text_sh = classfont.render("Shop",1,"white")
+            text_sh_rect = text_sh.get_rect()
+            text_sh_rect.x = 40
+            text_sh_rect.y = 150
+            screen.blit(text_sh,(text_sh_rect.x,text_sh_rect.y))
+
+            text_ex = classfont.render("Exit",1,"white")
+            text_ex_rect = text_ex.get_rect()
+            text_ex_rect.x = 40
+            text_ex_rect.y = 200
+            screen.blit(text_ex,(text_ex_rect.x,text_ex_rect.y))
+
+            if text_ch_rect.collidepoint(pygame.mouse.get_pos()):
+                if pygame.mouse.get_pressed()[0]:
+                    text_items=[]
+                    i=0
+                    for item in p.slots:
+                        text_items.append(classfont.render(item.name,1,"white"))
+                        if i>0:
+                            screen.blit(text_items[i],(400,100+(i*50)))
+                        else:
+                            screen.blit(text_items[i],(400,100))
+                        i+=1
             
 
         pygame.display.update()
