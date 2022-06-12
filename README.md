@@ -4,7 +4,7 @@ python simple rpg game
 1. note
     - pygame simple interface
 2. note
-    -creating main menu
+    - creating main menu
         - buttons -> actions
         - input box
 3. note
@@ -12,6 +12,10 @@ python simple rpg game
         - switch class
         - classes have different skills
 4. note
-    -game menu
-    -items
-        -item properties
+    - game menu
+    - items
+        - item properties
+5. note
+    - character button
+        - show player name
+        - show player items

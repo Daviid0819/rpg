@@ -51,7 +51,7 @@ def main():
     pygame.display.set_caption("RPG")
     clock = pygame.time.Clock()
 
-    p=Player("dave")
+    p=Player("David")
 
     items = [
         Item("Sword",15,0,5,1,3),
@@ -75,6 +75,7 @@ def main():
     classfont = pygame.font.Font("freesansbold.ttf",20)
 
     win=3
+    gamemenu=0
     name=""
 
     while True:
@@ -245,18 +246,34 @@ def main():
             text_ex_rect.y = 200
             screen.blit(text_ex,(text_ex_rect.x,text_ex_rect.y))
 
-            if text_ch_rect.collidepoint(pygame.mouse.get_pos()):
-                if pygame.mouse.get_pressed()[0]:
+            if text_ch_rect.collidepoint(pygame.mouse.get_pos()) or gamemenu==1:
+                if pygame.mouse.get_pressed()[0] or gamemenu==1:
+                    gamemenu=1
+
+                    text_nm = classfont.render(p.name,1,"white")
+                    screen.blit(text_nm,((text_ch_rect.width+80+width)/2-(text_nm.get_rect().width/2),50))
+
                     text_items=[]
+                    text_items_rect=[]
                     i=0
+                    itemy=0
+
                     for item in p.slots:
                         text_items.append(classfont.render(item.name,1,"white"))
                         if i>0:
-                            screen.blit(text_items[i],(400,100+(i*50)))
+                            itemy+=text_items[i-1].get_rect().width
+                            text_items_rect.append(text_items[i].get_rect())
+                            text_items_rect[i].x=(text_ch_rect.width+120)+(i*40)+itemy
+                            text_items_rect[i].y=300
+                            screen.blit(text_items[i],(text_items_rect[i].x,text_items_rect[i].y))
                         else:
-                            screen.blit(text_items[i],(400,100))
+                            text_items_rect.append(text_items[i].get_rect())
+                            text_items_rect[i].x=(text_ch_rect.width+120)
+                            text_items_rect[i].y=300
+                            screen.blit(text_items[i],(text_items_rect[i].x,text_items_rect[i].y))
                         i+=1
-            
+                        
+                    # if hover on item: show item properties
 
         pygame.display.update()
         pygame.time.delay(10)
