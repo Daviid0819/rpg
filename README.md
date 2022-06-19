@@ -19,3 +19,7 @@ python simple rpg game
     - character button
         - show player name
         - show player items
+6. note
+    - character menu
+        - item properties -> hover show item properties
+        - positions -> item container, items

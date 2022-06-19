@@ -64,6 +64,15 @@ def main():
     p.slots.append(items[0])
     p.slots.append(items[1])
     p.slots.append(items[2])
+    p.slots.append(items[0])
+    p.slots.append(items[1])
+    p.slots.append(items[2])
+    p.slots.append(items[3])
+    p.slots.append(items[3])
+    p.slots.append(items[3])
+    p.slots.append(items[3])
+    p.slots.append(items[3])
+    p.slots.append(items[3])
 
     menufont = pygame.font.Font("freesansbold.ttf",30)
     menucolor = {
@@ -73,6 +82,7 @@ def main():
     }
 
     classfont = pygame.font.Font("freesansbold.ttf",20)
+    itemfont = pygame.font.Font("freesansbold.ttf",16)
 
     win=3
     gamemenu=0
@@ -246,12 +256,18 @@ def main():
             text_ex_rect.y = 200
             screen.blit(text_ex,(text_ex_rect.x,text_ex_rect.y))
 
+            # Character gamemenu
             if text_ch_rect.collidepoint(pygame.mouse.get_pos()) or gamemenu==1:
                 if pygame.mouse.get_pressed()[0] or gamemenu==1:
-                    gamemenu=1
+                    if gamemenu!=1: 
+                        gamemenu=1
 
                     text_nm = classfont.render(p.name,1,"white")
                     screen.blit(text_nm,((text_ch_rect.width+80+width)/2-(text_nm.get_rect().width/2),50))
+
+                    # Show player items
+                    text_it = classfont.render("Items",1,"white")
+                    screen.blit(text_it,((text_ch_rect.width+80+width)/2-(text_it.get_rect().width/2),400))
 
                     text_items=[]
                     text_items_rect=[]
@@ -260,20 +276,110 @@ def main():
 
                     for item in p.slots:
                         text_items.append(classfont.render(item.name,1,"white"))
-                        if i>0:
+                        text_items_rect.append(text_items[i].get_rect())
+
+                        if i>0 and i<6:
                             itemy+=text_items[i-1].get_rect().width
-                            text_items_rect.append(text_items[i].get_rect())
                             text_items_rect[i].x=(text_ch_rect.width+120)+(i*40)+itemy
-                            text_items_rect[i].y=300
-                            screen.blit(text_items[i],(text_items_rect[i].x,text_items_rect[i].y))
+                            text_items_rect[i].y=450
+                        elif i>=6:
+                            if i==6:
+                                itemy=0
+                                text_items_rect[i].x=(text_ch_rect.width+120)
+                                text_items_rect[i].y=550
+                            else:
+                                itemy+=text_items[i-1].get_rect().width
+                                text_items_rect[i].x=(text_ch_rect.width+120)+((i-6)*40)+itemy
+                                text_items_rect[i].y=550
                         else:
-                            text_items_rect.append(text_items[i].get_rect())
                             text_items_rect[i].x=(text_ch_rect.width+120)
-                            text_items_rect[i].y=300
-                            screen.blit(text_items[i],(text_items_rect[i].x,text_items_rect[i].y))
+                            text_items_rect[i].y=450
+
+                        screen.blit(text_items[i],(text_items_rect[i].x,text_items_rect[i].y))
                         i+=1
                         
-                    # if hover on item: show item properties
+                    # Item properties
+                    i=0
+                    for item in text_items_rect:
+                        if item.collidepoint(pygame.mouse.get_pos()):
+                            j=0
+                            props=[]
+                            recty=0
+                            atk,atk_rect,de,de_rect,str,str_rect,ig,ig_rect,ag,ag_rect=None,None,None,None,None,None,None,None,None,None
+                            if p.slots[i].atk!=0:
+                                atk = itemfont.render(f"ATK: {p.slots[i].atk}",1,"white")
+                                atk_rect=atk.get_rect()
+                                atk_rect.x=(item.width/2-atk_rect.width/2)+item.x
+                                atk_rect.y=item.y+item.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=atk_rect.y
+                                j+=1
+                                props.append(atk_rect)
+
+                            if p.slots[i].de!=0:
+                                de = itemfont.render(f"DEF: {p.slots[i].de}",1,"white")
+                                de_rect=de.get_rect()
+                                de_rect.x=(item.width/2-de_rect.width/2)+item.x
+                                de_rect.y=item.y+item.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=de_rect.y
+                                j+=1
+                                props.append(de_rect)
+
+                            if p.slots[i].str!=0:
+                                str = itemfont.render(f"STR: {p.slots[i].str}",1,"white")
+                                str_rect=str.get_rect()
+                                str_rect.x=(item.width/2-str_rect.width/2)+item.x
+                                str_rect.y=item.y+item.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=str_rect.y
+                                j+=1
+                                props.append(str_rect)
+                            
+                            if p.slots[i].ig!=0:
+                                ig = itemfont.render(f"IG: {p.slots[i].ig}",1,"white","black")
+                                ig_rect=ig.get_rect()
+                                ig_rect.x=(item.width/2-ig_rect.width/2)+item.x
+                                ig_rect.y=item.y+item.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=ig_rect.y
+                                j+=1
+                                props.append(ig_rect)
+
+                            if p.slots[i].ag!=0:
+                                ag = itemfont.render(f"AG: {p.slots[i].ag}",1,"white","black")
+                                ag_rect=ag.get_rect()
+                                ag_rect.x=(item.width/2-ag_rect.width/2)+item.x
+                                ag_rect.y=item.y+item.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=ag_rect.y
+                                props.append(ag_rect)
+                                j+=1
+
+                            big=props[0]
+                            for pr in props:
+                                if pr.width>big.width:
+                                    big=pr
+
+                            pygame.draw.rect(screen,"black",pygame.Rect(big.x,recty,big.width,20*j))
+                            if atk!=None:
+                                screen.blit(atk,(atk_rect.x,atk_rect.y))
+                            if de!=None:
+                                screen.blit(de,(de_rect.x,de_rect.y))
+                            if str!=None:
+                                screen.blit(str,(str_rect.x,str_rect.y))
+                            if ig!=None:
+                                screen.blit(ig,(ig_rect.x,ig_rect.y))
+                            if ag!=None:
+                                screen.blit(ag,(ag_rect.x,ag_rect.y))
+                        i+=1
+                    
+                    #equip item (texts)
 
         pygame.display.update()
         pygame.time.delay(10)
