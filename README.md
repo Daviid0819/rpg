@@ -23,3 +23,12 @@ python simple rpg game
     - character menu
         - item properties -> hover show item properties
         - positions -> item container, items
+7. note
+    - game menu updated (a white line...wow)
+    - character menu updated
+        - positions fixed (all of the texts placed the center of the menu)
+        - player properties
+            - class
+            - skillz
+            - level
+            - xp (/level*100)

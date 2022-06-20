@@ -6,9 +6,10 @@ from sys import exit
 class Player:
     def __init__(self,name):
         self.name=name
-        self.health=100
+        self.health=100 # Do I need this!?
         self.lv=1
         self.xp=0
+        self.coin=100
 
         self.slots=[]
         self.weapon=None
@@ -35,13 +36,15 @@ class Player:
             self.ag=10
 
 class Item:
-    def __init__(self,name,atk,de,str,ig,ag):
+    def __init__(self,name,atk,de,str,ig,ag,price):
         self.name=name
         self.atk=atk
         self.de=de
         self.str=str
         self.ig=ig
         self.ag=ag
+        self.price=price
+        self.sell=price*0.75
 
 def main():
     pygame.init()
@@ -54,11 +57,11 @@ def main():
     p=Player("David")
 
     items = [
-        Item("Sword",15,0,5,1,3),
-        Item("Wand",7,0,2,8,4),
-        Item("Knife",10,0,4,0,7),
+        Item("Sword",15,0,5,1,3,20),
+        Item("Wand",7,0,2,8,4,20),
+        Item("Knife",10,0,4,0,7,20),
 
-        Item("Chainvest",0,10,3,0,-4)
+        Item("Chainvest",0,10,3,0,-4,20)
     ]
 
     p.slots.append(items[0])
@@ -256,18 +259,69 @@ def main():
             text_ex_rect.y = 200
             screen.blit(text_ex,(text_ex_rect.x,text_ex_rect.y))
 
+            pygame.draw.line(screen,"white",(text_ch_rect.x+text_ch_rect.width+60,0),(text_ch_rect.x+text_ch_rect.width+60,height),1)
+
             # Character gamemenu
             if text_ch_rect.collidepoint(pygame.mouse.get_pos()) or gamemenu==1:
                 if pygame.mouse.get_pressed()[0] or gamemenu==1:
                     if gamemenu!=1: 
                         gamemenu=1
 
+                    # Player properties
                     text_nm = classfont.render(p.name,1,"white")
-                    screen.blit(text_nm,((text_ch_rect.width+80+width)/2-(text_nm.get_rect().width/2),50))
+                    text_nm_rect = text_nm.get_rect()
+                    text_nm_rect.x = (text_ch_rect.width+text_ch_rect.x+80+width)/2-(text_nm.get_rect().width/2)
+                    text_nm_rect.y = 50
+                    screen.blit(text_nm,(text_nm_rect.x,text_nm_rect.y))
 
+                    text_lv = itemfont.render(f"Level: {p.lv}",1,"white")
+                    text_xp = itemfont.render(f"XP: {p.xp}/{p.lv*100}",1,"white")
+                    screen.blit(text_lv,(((text_nm_rect.x+text_nm_rect.width/2)-40)-text_lv.get_rect().width,90))
+                    screen.blit(text_xp,(((text_nm_rect.x+text_nm_rect.width/2)+40),90))
+
+                    if text_nm_rect.collidepoint(pygame.mouse.get_pos()):
+                        clas=None
+                        if p.cl==1:
+                            clas="Warrior"
+                        elif p.cl==2:
+                            clas="Mage"
+                        elif p.cl==3:
+                            clas="Thief"
+                        else:
+                            clas="Bundaskenyer"
+
+                        p_cl = itemfont.render(f"Class: {clas}",1,"white")
+                        p_cl_rect = p_cl.get_rect()
+                        p_cl_rect.x = (text_nm_rect.width/2-p_cl_rect.width/2)+text_nm_rect.x
+                        p_cl_rect.y = 80
+
+                        p_str = itemfont.render(f"Strength: {p.str}",1,"white")
+                        p_str_rect = p_str.get_rect()
+                        p_str_rect.x = (text_nm_rect.width/2-p_str_rect.width/2)+text_nm_rect.x
+                        p_str_rect.y = 100
+
+                        p_ag = itemfont.render(f"Agility: {p.ag}",1,"white")
+                        p_ag_rect = p_ag.get_rect()
+                        p_ag_rect.x = (text_nm_rect.width/2-p_ag_rect.width/2)+text_nm_rect.x
+                        p_ag_rect.y = 120
+
+                        p_ig = itemfont.render(f"Intelligence: {p.ig}",1,"white")
+                        p_ig_rect = p_ig.get_rect()
+                        p_ig_rect.x = (text_nm_rect.width/2-p_ig_rect.width/2)+text_nm_rect.x
+                        p_ig_rect.y = 140
+
+                        pygame.draw.rect(screen,"black",pygame.Rect(min(p_cl_rect.x,p_str_rect.x,p_ag_rect.x,p_ig_rect.x),p_cl_rect.y,max(p_cl_rect.width,p_str_rect.width,p_ag_rect.width,p_ig_rect.width),60))
+
+                        screen.blit(p_cl,(p_cl_rect.x,p_cl_rect.y))
+                        screen.blit(p_str,(p_str_rect.x,p_str_rect.y))
+                        screen.blit(p_ag,(p_ag_rect.x,p_ag_rect.y))
+                        screen.blit(p_ig,(p_ig_rect.x,p_ig_rect.y))
+
+                    # Player equipped items (under development) AND COIN!!!!!!!!!!!!!!!!!!!!!!!
+                    
                     # Show player items
                     text_it = classfont.render("Items",1,"white")
-                    screen.blit(text_it,((text_ch_rect.width+80+width)/2-(text_it.get_rect().width/2),400))
+                    screen.blit(text_it,((text_ch_rect.width+text_ch_rect.x+80+width)/2-(text_it.get_rect().width/2),400))
 
                     text_items=[]
                     text_items_rect=[]
@@ -280,19 +334,19 @@ def main():
 
                         if i>0 and i<6:
                             itemy+=text_items[i-1].get_rect().width
-                            text_items_rect[i].x=(text_ch_rect.width+120)+(i*40)+itemy
+                            text_items_rect[i].x=(text_ch_rect.width+text_ch_rect.x+120)+(i*40)+itemy
                             text_items_rect[i].y=450
                         elif i>=6:
                             if i==6:
                                 itemy=0
-                                text_items_rect[i].x=(text_ch_rect.width+120)
+                                text_items_rect[i].x=(text_ch_rect.width+text_ch_rect.x+120)
                                 text_items_rect[i].y=550
                             else:
                                 itemy+=text_items[i-1].get_rect().width
-                                text_items_rect[i].x=(text_ch_rect.width+120)+((i-6)*40)+itemy
+                                text_items_rect[i].x=(text_ch_rect.width+text_ch_rect.x+120)+((i-6)*40)+itemy
                                 text_items_rect[i].y=550
                         else:
-                            text_items_rect[i].x=(text_ch_rect.width+120)
+                            text_items_rect[i].x=(text_ch_rect.width+text_ch_rect.x+120)
                             text_items_rect[i].y=450
 
                         screen.blit(text_items[i],(text_items_rect[i].x,text_items_rect[i].y))
@@ -358,8 +412,8 @@ def main():
 
                                 if j==0:
                                     recty=ag_rect.y
-                                props.append(ag_rect)
                                 j+=1
+                                props.append(ag_rect)
 
                             big=props[0]
                             for pr in props:
@@ -379,7 +433,7 @@ def main():
                                 screen.blit(ag,(ag_rect.x,ag_rect.y))
                         i+=1
                     
-                    #equip item (texts)
+                    #un/equip item (texts)
 
         pygame.display.update()
         pygame.time.delay(10)
