@@ -24,7 +24,7 @@ python simple rpg game
         - item properties -> hover show item properties
         - positions -> item container, items
 7. note
-    - game menu updated (a white line...wow)
+    - game menu updated (a white line...WoW)
     - character menu updated
         - positions fixed (all of the texts placed the center of the menu)
         - player properties
