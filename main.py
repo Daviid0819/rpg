@@ -3,48 +3,8 @@
 import pygame
 from sys import exit
 
-class Player:
-    def __init__(self,name):
-        self.name=name
-        self.health=100 # Do I need this!?
-        self.lv=1
-        self.xp=0
-        self.coin=100
-
-        self.slots=[]
-        self.weapon=None
-        self.clothe=None
-
-        self.cl=0
-        self.str=0
-        self.ig=0
-        self.ag=0
-    
-    def setClass(self,num):
-        self.cl=num
-        if num==1: # Warrior
-            self.str=10
-            self.ig=4
-            self.ag=5
-        elif num==2: # Mage
-            self.str=2
-            self.ig=10
-            self.ag=7
-        elif num==3: # Thief
-            self.str=6
-            self.ig=6
-            self.ag=10
-
-class Item:
-    def __init__(self,name,atk,de,str,ig,ag,price):
-        self.name=name
-        self.atk=atk
-        self.de=de
-        self.str=str
-        self.ig=ig
-        self.ag=ag
-        self.price=price
-        self.sell=price*0.75
+from player import *
+from item import *
 
 def main():
     pygame.init()
@@ -55,14 +15,6 @@ def main():
     clock = pygame.time.Clock()
 
     p=Player("David")
-
-    items = [
-        Item("Sword",15,0,5,1,3,20),
-        Item("Wand",7,0,2,8,4,20),
-        Item("Knife",10,0,4,0,7,20),
-
-        Item("Chainvest",0,10,3,0,-4,20)
-    ]
 
     p.slots.append(items[0])
     p.slots.append(items[1])
@@ -90,6 +42,7 @@ def main():
     win=3
     gamemenu=0
     name=""
+    clicked=0
 
     while True:
         clock.tick(60)
@@ -103,6 +56,8 @@ def main():
                         name = name[:-1]
                     elif len(name)<10:
                         name += event.unicode
+            if clicked==1 and event.type==pygame.MOUSEBUTTONUP and event.button==1:
+                clicked=0
 
         screen.fill("black")
 
@@ -270,15 +225,21 @@ def main():
                     # Player properties
                     text_nm = classfont.render(p.name,1,"white")
                     text_nm_rect = text_nm.get_rect()
-                    text_nm_rect.x = (text_ch_rect.width+text_ch_rect.x+80+width)/2-(text_nm.get_rect().width/2)
+                    text_nm_rect.x = (text_ch_rect.width+text_ch_rect.x+80+width)/2-(text_nm_rect.width/2)
                     text_nm_rect.y = 50
                     screen.blit(text_nm,(text_nm_rect.x,text_nm_rect.y))
 
                     text_lv = itemfont.render(f"Level: {p.lv}",1,"white")
-                    text_xp = itemfont.render(f"XP: {p.xp}/{p.lv*100}",1,"white")
                     screen.blit(text_lv,(((text_nm_rect.x+text_nm_rect.width/2)-40)-text_lv.get_rect().width,90))
-                    screen.blit(text_xp,(((text_nm_rect.x+text_nm_rect.width/2)+40),90))
+                    
+                    screen.blit(itemfont.render(f"XP: {p.xp}/{p.lv*100}",1,"white"),(((text_nm_rect.x+text_nm_rect.width/2)+40),90))
 
+                    text_c = itemfont.render(f"Coin: {p.coin}",1,"white")
+                    text_c_rect = text_c.get_rect()
+                    text_c_rect.x = (text_ch_rect.width+text_ch_rect.x+80+width)/2-(text_c_rect.width/2)
+                    text_c_rect.y = 130
+                    screen.blit(text_c,(text_c_rect.x,text_c_rect.y))
+                    
                     if text_nm_rect.collidepoint(pygame.mouse.get_pos()):
                         clas=None
                         if p.cl==1:
@@ -310,14 +271,199 @@ def main():
                         p_ig_rect.x = (text_nm_rect.width/2-p_ig_rect.width/2)+text_nm_rect.x
                         p_ig_rect.y = 140
 
-                        pygame.draw.rect(screen,"black",pygame.Rect(min(p_cl_rect.x,p_str_rect.x,p_ag_rect.x,p_ig_rect.x),p_cl_rect.y,max(p_cl_rect.width,p_str_rect.width,p_ag_rect.width,p_ig_rect.width),60))
+                        pygame.draw.rect(screen,"black",pygame.Rect(min(p_cl_rect.x,p_str_rect.x,p_ag_rect.x,p_ig_rect.x),p_cl_rect.y,max(p_cl_rect.width,p_str_rect.width,p_ag_rect.width,p_ig_rect.width),90))
 
                         screen.blit(p_cl,(p_cl_rect.x,p_cl_rect.y))
                         screen.blit(p_str,(p_str_rect.x,p_str_rect.y))
                         screen.blit(p_ag,(p_ag_rect.x,p_ag_rect.y))
                         screen.blit(p_ig,(p_ig_rect.x,p_ig_rect.y))
 
-                    # Player equipped items (under development) AND COIN!!!!!!!!!!!!!!!!!!!!!!!
+                    # Show player equipped items
+                    text_wep=classfont.render(f"Weapon:",1,"white")
+                    screen.blit(text_wep,(((text_nm_rect.x+text_nm_rect.width/2)-80)-text_wep.get_rect().width,220))
+
+                    screen.blit(classfont.render("Clothe:",1,"white"),(((text_nm_rect.x+text_nm_rect.width/2)+80),220))
+
+                    if p.weapon==None:
+                        text_pwep=classfont.render("None",1,"white")
+                        screen.blit(text_pwep,(((text_nm_rect.x+text_nm_rect.width/2)-80)-text_pwep.get_rect().width,270))
+                    else:
+                        text_pwep=classfont.render(p.weapon.name,1,"white")
+                        text_pwep_rect=text_pwep.get_rect()
+                        text_pwep_rect.x=((text_nm_rect.x+text_nm_rect.width/2)-80)-text_pwep.get_rect().width
+                        text_pwep_rect.y=270
+                        screen.blit(text_pwep,(text_pwep_rect.x,text_pwep_rect.y))
+
+                        if text_pwep_rect.collidepoint(pygame.mouse.get_pos()):
+                            j=0
+                            props=[]
+                            recty=0
+                            atk,atk_rect,de,de_rect,str,str_rect,ig,ig_rect,ag,ag_rect=None,None,None,None,None,None,None,None,None,None
+                            if p.weapon.atk!=0:
+                                atk = itemfont.render(f"ATK: {p.weapon.atk}",1,"white")
+                                atk_rect=atk.get_rect()
+                                atk_rect.x=(text_pwep_rect.width/2-atk_rect.width/2)+text_pwep_rect.x
+                                atk_rect.y=text_pwep_rect.y+text_pwep_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=atk_rect.y
+                                j+=1
+                                props.append(atk_rect)
+
+                            if p.weapon.de!=0:
+                                de = itemfont.render(f"DEF: {p.weapon.de}",1,"white")
+                                de_rect=de.get_rect()
+                                de_rect.x=(text_pwep_rect.width/2-de_rect.width/2)+text_pwep_rect.x
+                                de_rect.y=text_pwep_rect.y+text_pwep_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=de_rect.y
+                                j+=1
+                                props.append(de_rect)
+
+                            if p.weapon.str!=0:
+                                str = itemfont.render(f"STR: {p.weapon.str}",1,"white")
+                                str_rect=str.get_rect()
+                                str_rect.x=(text_pwep_rect.width/2-str_rect.width/2)+text_pwep_rect.x
+                                str_rect.y=text_pwep_rect.y+text_pwep_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=str_rect.y
+                                j+=1
+                                props.append(str_rect)
+                            
+                            if p.weapon.ig!=0:
+                                ig = itemfont.render(f"IG: {p.weapon.ig}",1,"white","black")
+                                ig_rect=ig.get_rect()
+                                ig_rect.x=(text_pwep_rect.width/2-ig_rect.width/2)+text_pwep_rect.x
+                                ig_rect.y=text_pwep_rect.y+text_pwep_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=ig_rect.y
+                                j+=1
+                                props.append(ig_rect)
+
+                            if p.weapon.ag!=0:
+                                ag = itemfont.render(f"AG: {p.weapon.ag}",1,"white","black")
+                                ag_rect=ag.get_rect()
+                                ag_rect.x=(text_pwep_rect.width/2-ag_rect.width/2)+text_pwep_rect.x
+                                ag_rect.y=text_pwep_rect.y+text_pwep_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=ag_rect.y
+                                j+=1
+                                props.append(ag_rect)
+
+                            big=props[0]
+                            for pr in props:
+                                if pr.width>big.width:
+                                    big=pr
+
+                            pygame.draw.rect(screen,"black",pygame.Rect(big.x,recty,big.width,20*j))
+                            if atk!=None:
+                                screen.blit(atk,(atk_rect.x,atk_rect.y))
+                            if de!=None:
+                                screen.blit(de,(de_rect.x,de_rect.y))
+                            if str!=None:
+                                screen.blit(str,(str_rect.x,str_rect.y))
+                            if ig!=None:
+                                screen.blit(ig,(ig_rect.x,ig_rect.y))
+                            if ag!=None:
+                                screen.blit(ag,(ag_rect.x,ag_rect.y))
+
+                            if pygame.mouse.get_pressed()[0] and clicked==0:
+                                p.unequipWeapon()
+                                clicked=1
+                    
+                    if p.clothe==None:
+                        screen.blit(classfont.render("None",1,"white"),(((text_nm_rect.x+text_nm_rect.width/2)+80),270))
+                    else:
+                        text_co=classfont.render(p.clothe.name,1,"white")
+                        text_co_rect=text_co.get_rect()
+                        text_co_rect.x=((text_nm_rect.x+text_nm_rect.width/2)+80)
+                        text_co_rect.y=270
+                        screen.blit(text_co,(text_co_rect.x,text_co_rect.y))
+
+                        if text_co_rect.collidepoint(pygame.mouse.get_pos()):
+                            j=0
+                            props=[]
+                            recty=0
+                            atk,atk_rect,de,de_rect,str,str_rect,ig,ig_rect,ag,ag_rect=None,None,None,None,None,None,None,None,None,None
+                            if p.clothe.atk!=0:
+                                atk = itemfont.render(f"ATK: {p.clothe.atk}",1,"white")
+                                atk_rect=atk.get_rect()
+                                atk_rect.x=(text_co_rect.width/2-atk_rect.width/2)+text_co_rect.x
+                                atk_rect.y=text_co_rect.y+text_co_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=atk_rect.y
+                                j+=1
+                                props.append(atk_rect)
+
+                            if p.clothe.de!=0:
+                                de = itemfont.render(f"DEF: {p.clothe.de}",1,"white")
+                                de_rect=de.get_rect()
+                                de_rect.x=(text_co_rect.width/2-de_rect.width/2)+text_co_rect.x
+                                de_rect.y=text_co_rect.y+text_co_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=de_rect.y
+                                j+=1
+                                props.append(de_rect)
+
+                            if p.clothe.str!=0:
+                                str = itemfont.render(f"STR: {p.clothe.str}",1,"white")
+                                str_rect=str.get_rect()
+                                str_rect.x=(text_co_rect.width/2-str_rect.width/2)+text_co_rect.x
+                                str_rect.y=text_co_rect.y+text_co_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=str_rect.y
+                                j+=1
+                                props.append(str_rect)
+                            
+                            if p.clothe.ig!=0:
+                                ig = itemfont.render(f"IG: {p.clothe.ig}",1,"white","black")
+                                ig_rect=ig.get_rect()
+                                ig_rect.x=(text_co_rect.width/2-ig_rect.width/2)+text_co_rect.x
+                                ig_rect.y=text_co_rect.y+text_co_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=ig_rect.y
+                                j+=1
+                                props.append(ig_rect)
+
+                            if p.clothe.ag!=0:
+                                ag = itemfont.render(f"AG: {p.clothe.ag}",1,"white","black")
+                                ag_rect=ag.get_rect()
+                                ag_rect.x=(text_co_rect.width/2-ag_rect.width/2)+text_co_rect.x
+                                ag_rect.y=text_co_rect.y+text_co_rect.height+((j*20)+10)
+
+                                if j==0:
+                                    recty=ag_rect.y
+                                j+=1
+                                props.append(ag_rect)
+
+                            big=props[0]
+                            for pr in props:
+                                if pr.width>big.width:
+                                    big=pr
+
+                            pygame.draw.rect(screen,"black",pygame.Rect(big.x,recty,big.width,20*j))
+                            if atk!=None:
+                                screen.blit(atk,(atk_rect.x,atk_rect.y))
+                            if de!=None:
+                                screen.blit(de,(de_rect.x,de_rect.y))
+                            if str!=None:
+                                screen.blit(str,(str_rect.x,str_rect.y))
+                            if ig!=None:
+                                screen.blit(ig,(ig_rect.x,ig_rect.y))
+                            if ag!=None:
+                                screen.blit(ag,(ag_rect.x,ag_rect.y))
+
+                            if pygame.mouse.get_pressed()[0] and clicked==0:
+                                p.unequipClothe()
+                                clicked=1                        
                     
                     # Show player items
                     text_it = classfont.render("Items",1,"white")
@@ -431,9 +577,23 @@ def main():
                                 screen.blit(ig,(ig_rect.x,ig_rect.y))
                             if ag!=None:
                                 screen.blit(ag,(ag_rect.x,ag_rect.y))
+
+                            if pygame.mouse.get_pressed()[0] and clicked==0:
+                                clicked=1
+                                if p.slots[i].itype==1:
+                                    p.unequipWeapon()
+                                    p.equipWeapon(i)
+                                elif p.slots[i].itype==2:
+                                    p.unequipClothe()
+                                    p.equipClothe(i)
                         i+=1
-                    
-                    #un/equip item (texts)
+
+            # Missions gamemenu
+            if text_ms_rect.collidepoint(pygame.mouse.get_pos()) or gamemenu==2:
+                if pygame.mouse.get_pressed()[0] or gamemenu==2:
+                    if gamemenu!=2: 
+                        gamemenu=2
+                    # quests
 
         pygame.display.update()
         pygame.time.delay(10)

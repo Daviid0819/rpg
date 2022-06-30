@@ -32,3 +32,10 @@ python simple rpg game
             - skillz
             - level
             - xp (/level*100)
+8. note
+    - player properties
+        - coin
+    - player class
+        - equip, unequip items
+    - character menu (finished)
+        - equipped items
